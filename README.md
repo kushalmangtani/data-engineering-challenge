@@ -49,9 +49,9 @@ TODO
 ----
 
 Some of the things that I would like to add:  
-Creating file,Inserting in database should be seperated in 2 different files.  
-I wanted to do this using python generic operation and without using any additional libs.We can also use pandas package.   
-Reduce the creating file operation time by removing string concatenations or using multithreading.  
+1.  Creating file,Inserting in database should be seperated in 2 different files.  
+2.  I wanted to do this using python generic operation and without using any additional libs.We can also use pandas package.   
+3.  Reduce the creating file operation time by removing string concatenations or using multithreading.  
 
 
 

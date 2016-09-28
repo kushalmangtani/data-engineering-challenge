@@ -4,6 +4,15 @@ import random
 import string
 import time
 import logging
+import sqlite3
+import csv
+import traceback
+
+# Constants
+FILE_NAME = "ayasdi_assignment.csv"
+DB_NAME = "ayasdi_assignment.db"
+TABLE_NAME = "ayasdi_assignment"
+
 
 # set up logger
 
@@ -67,8 +76,9 @@ def random_date(start_date, end_date):
 def col_2_to_10_header():
     ''' returns a concatenated string of headers for col2 to col10. Each header is seperated bt tab char'''
     data = ""
+    mean_generator = mean()
     for i in xrange(2, 11):
-        mean_value = next(mean())
+        mean_value = next(mean_generator)
         header = "col{i}_{m}".format(i=i, m=mean_value)
         data += header + "\t"
     return data
@@ -82,15 +92,18 @@ def col_11_to_19_header():
         data += header + "\t"
     return data
 
+
 # column values
 
 
 def column_2_to_10():
     ''' returns a concatenated string of row value for col 2 to col 10. TODO : achieve 10 percent nulls '''
     data = ""
+    mean_generator = mean()
+    std_dev_generator = standard_deviation()
     for i in xrange(2, 11):
-        mean_value = next(mean())
-        std_dev_value = next(standard_deviation())
+        mean_value = next(mean_generator)
+        std_dev_value = next(std_dev_generator)
         value = random.gauss(mean_value, std_dev_value)
         data += str(value) + "\t"
     return data
@@ -111,6 +124,7 @@ def column_20():
     end_date = "12/31/2014"
     return random_date(start_date, end_date)
 
+
 # creating the dataset
 
 
@@ -124,7 +138,7 @@ def create_dataset(file_name):
         f.write("col20")
         f.write("\n")
         # add table rows
-        for i in range(1, 1000000):
+        for i in range(1, 1000001):
             f.write(str(i) + "\t")
             f.write(column_2_to_10())
             f.write(column_11_to_19())
@@ -132,14 +146,93 @@ def create_dataset(file_name):
             f.write("\n")
 
 
-# inserting the dataset
+# sql lite operations
+
+
+def create_table(cursor, table_name):
+    ''' creates a table in sql-lite. '''
+    logger.info("Creating Table Name : " + table_name)
+    COL1 = "CREATE TABLE {t} (col1 INT PRIMARY KEY NOT NULL,".format(
+        t=table_name)
+
+    # # add col 2_to_10 headers
+    COL_2_10 = ""
+    entries = filter(None, col_2_to_10_header().split("\t"))
+    for i in entries:
+        COL_2_10 += i + " REAL,"
+
+    # # add col 11_to_19 headers
+    COL_11_19 = ""
+    text_entries = filter(None, col_11_to_19_header().split("\t"))
+    for j in text_entries:
+        COL_11_19 += j + " TEXT,"
+
+    # SQL query
+    SQL = "{c1}{c2}{c3}col20 TEXT NOT NULL);".format(
+        c1=COL1, c2=COL_2_10, c3=COL_11_19)
+
+    logger.info("create table sql:\n{s}".format(s=SQL))
+    cursor.execute(SQL)
+    logger.info("Table was Successfully Created.")
+
+
+def read_chunks(reader, chunk_size=10):
+    ''' generator function that returns a chunk of 10000 records from csv file.'''
+    l = []
+    for x in reader:
+        if(chunk_size == 0):
+            yield l
+        l.append(x)
+        chunk_size -= 1
+
+
+def insert_chunk(cursor, query, data):
+    ''' each chunk is denoted as one transaction.'''
+    logging.info("inside insert_chunk")
+    for row in data:
+        logging.info("cursor execute"+str(row))
+        cursor.execute(query, tuple(row))
+
+# inserts data in table
+
+def insert_entries_table(cursor, connection,file_name, table_name):
+    ''' inserts entries in table,chunk-wise.'''
+    logger.info("Insering entries from {f} in {t}".format(
+        f=file_name, t=table_name))
+
+    with open(file_name, "r+") as file:
+        reader = csv.reader(file, delimiter="\t")
+        # read the first line for columns.
+        columns = next(reader)
+        query = "INSERT into {0}({1}) values({2})"
+        format_query = query.format(table_name, ",".join(
+            columns), ",".join("?" * len(columns)))
+        logger.info("Query:"+format_query)
+        # insert the entries in table chunk-wise.
+        for chunk in read_chunks(reader):
+            cursor.execute("BEGIN TRANSACTION")
+            insert_chunk(cursor, format_query, chunk)
+            connection.commit()
+
 
 def main():
-    logger.info("Running Main..")
-    create_dataset("temp.csv")
+    create_dataset(FILE_NAME)
     logger.info("Dataset File was Successfully Created.")
     # insert the dataset in sqllite
+    try:
+        logger.info("Creating Database Name : " + DB_NAME)
+        connection = sqlite3.connect(DB_NAME)
+        logger.info("Database was Successfully Created.")
+        cursor = connection.cursor()
+        create_table(cursor, TABLE_NAME)
+        insert_entries_table(cursor, connection, "ayasdi_assignment.csv", "ayasdi_assignment")
+    except Exception as e:
+        logger.error(
+            "Found an Exception when trying to insert data in sqllite. "+e.message)
+    finally:
+        connection.close()
+
 
 if __name__ == "__main__":
-    print "running main"
+    logger.info("Running Main ..")
     main()

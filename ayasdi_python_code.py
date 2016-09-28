@@ -11,7 +11,9 @@ import traceback
 # Constants
 FILE_NAME = "ayasdi_assignment.csv"
 DB_NAME = "ayasdi_assignment.db"
-TABLE_NAME = "ayasdi_assignment_table"
+TABLE_NAME = "ayasdi_assignment_table_full";
+DEFAULT_CHUNK_SIZE = 10000
+TOTAL_ENTRIES = 1000000
 
 # set up logger
 
@@ -137,7 +139,7 @@ def create_dataset(file_name):
         f.write("col20")
         f.write("\n")
         # add table rows
-        for i in range(1, 1000001):
+        for i in range(1, TOTAL_ENTRIES):
             f.write(str(i) + "\t")
             f.write(column_2_to_10())
             f.write(column_11_to_19())
@@ -175,14 +177,18 @@ def create_table(cursor, table_name):
     logger.info("Table was Successfully Created.")
 
 
-def read_chunks(reader, chunk_size=10):
+def read_chunks(reader, chunk_size=DEFAULT_CHUNK_SIZE):
     ''' generator function that returns a chunk of 10000 records from csv file.'''
     l = []
-    for x in reader:
-        if(chunk_size == 0):
+    i = 1
+    logger.info("Chunk Size : "+str(chunk_size))
+    for index,line in enumerate(reader):
+        if(index % chunk_size == 0 and index != 0):
             yield l
-        l.append(x)
-        chunk_size -= 1
+            l = []
+        l.append(line)
+    yield l    
+
 
 
 def insert_chunk(cursor, query, data):
@@ -208,11 +214,13 @@ def insert_entries_table(cursor, connection,file_name, table_name):
         i = 1
         # insert the entries in table chunk-wise.
         for chunk in read_chunks(reader):
-            logger.info("Inserting chunk no : {i}".format(i=i))
-            i += 1
+            logger.info("Inserting chunk no : {i}.".format(i=i))
             cursor.execute("BEGIN TRANSACTION")
             insert_chunk(cursor, format_query, chunk)
             connection.commit()
+            i += 1
+        connection.commit()
+        logger.info("Success => Inserted {n} entries in  {t} ".format(n=TOTAL_ENTRIES,t=table_name))
 
 
 def main():
@@ -226,6 +234,7 @@ def main():
         cursor = connection.cursor()
         create_table(cursor, TABLE_NAME)
         insert_entries_table(cursor, connection, FILE_NAME, TABLE_NAME)
+        connection.commit()
     except Exception as e:
         logger.error(
             "Found an Exception when trying to insert data in sqllite. "+e.message)

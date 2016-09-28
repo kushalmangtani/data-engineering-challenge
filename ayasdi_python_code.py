@@ -175,7 +175,7 @@ def create_table(cursor, table_name):
     logger.info("Table was Successfully Created.")
 
 
-def read_chunks(reader, chunk_size=10000):
+def read_chunks(reader, chunk_size=10):
     ''' generator function that returns a chunk of 10000 records from csv file.'''
     l = []
     for x in reader:
@@ -187,9 +187,7 @@ def read_chunks(reader, chunk_size=10000):
 
 def insert_chunk(cursor, query, data):
     ''' each chunk is denoted as one transaction.'''
-    logging.info("inside insert_chunk")
     for row in data:
-        logging.info("cursor execute"+str(row))
         cursor.execute(query, tuple(row))
 
 # inserts data in table
@@ -207,15 +205,18 @@ def insert_entries_table(cursor, connection,file_name, table_name):
         format_query = query.format(table_name, ",".join(
             columns), ",".join("?" * len(columns)))
         logger.info("Query:"+format_query)
+        i = 1
         # insert the entries in table chunk-wise.
         for chunk in read_chunks(reader):
+            logger.info("Inserting chunk no : {i}".format(i=i))
+            i += 1
             cursor.execute("BEGIN TRANSACTION")
             insert_chunk(cursor, format_query, chunk)
             connection.commit()
 
 
 def main():
-    create_dataset(FILE_NAME)
+    #create_dataset(FILE_NAME)
     logger.info("Dataset File was Successfully Created.")
     # insert the dataset in sqllite
     try:
@@ -224,7 +225,7 @@ def main():
         logger.info("Database was Successfully Created.")
         cursor = connection.cursor()
         create_table(cursor, TABLE_NAME)
-        insert_entries_table(cursor, connection, "ayasdi_assignment.csv", "ayasdi_assignment")
+        insert_entries_table(cursor, connection, FILE_NAME, TABLE_NAME)
     except Exception as e:
         logger.error(
             "Found an Exception when trying to insert data in sqllite. "+e.message)

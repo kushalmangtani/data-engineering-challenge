@@ -45,5 +45,16 @@ Also, I have used logger in the python module to indicate any INFO,ERROR message
 
 Use ```wc -l ayasdi_assignment.csv``` to ensure all the lines were successfully written in the file.
 
+TODO
+----
+
+Some of the things that I would like to add:  
+Creating file,Inserting in database should be seperated in 2 different files.  
+I wanted to do this using python generic operation and without using any additional libs.We can also use pandas package.   
+Reduce the creating file operation time by removing string concatenations or using multithreading.  
+
+
+
+
 
 

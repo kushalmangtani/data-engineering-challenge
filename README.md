@@ -27,7 +27,7 @@ sqllite
 Run
 ---
 
-python ayasdi_python_code.py  
+```python ayasdi_python_code.py```
 
 
 Output
@@ -36,4 +36,14 @@ Output
 It should generate a ayasdi_assignment.csv in current dir and add it to ayasdi_assignment_table in ayasdi_assignment.db.
 
 Tested only with sqlite.
+
+Verify
+-----
+
+The ayasdi_assignment.csv file takes around 2 mins to generate. I have used generators and inserted rows in table chunk-wise to improve performance.  
+Also, I have used logger in the python module to indicate any INFO,ERROR messages in module.
+
+Use ```wc -l ayasdi_assignment.csv``` to ensure all the lines were successfully written.
+
+
 

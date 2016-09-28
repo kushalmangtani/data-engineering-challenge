@@ -11,8 +11,7 @@ import traceback
 # Constants
 FILE_NAME = "ayasdi_assignment.csv"
 DB_NAME = "ayasdi_assignment.db"
-TABLE_NAME = "ayasdi_assignment"
-
+TABLE_NAME = "ayasdi_assignment_table"
 
 # set up logger
 
@@ -176,7 +175,7 @@ def create_table(cursor, table_name):
     logger.info("Table was Successfully Created.")
 
 
-def read_chunks(reader, chunk_size=10):
+def read_chunks(reader, chunk_size=10000):
     ''' generator function that returns a chunk of 10000 records from csv file.'''
     l = []
     for x in reader:

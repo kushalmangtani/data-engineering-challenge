@@ -43,7 +43,7 @@ Verify
 The ayasdi_assignment.csv file takes around 2 mins to generate. I have used generators and inserted rows in table chunk-wise to improve performance.  
 Also, I have used logger in the python module to indicate any INFO,ERROR messages in module.
 
-Use ```wc -l ayasdi_assignment.csv``` to ensure all the lines were successfully written.
+Use ```wc -l ayasdi_assignment.csv``` to ensure all the lines were successfully written in the file.
 
 
 

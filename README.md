@@ -22,7 +22,7 @@ Requirements
 ------------
 
 python >= 2.7  
-sqllite
+sqllite  
 requests
 
 Run

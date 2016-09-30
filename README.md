@@ -24,7 +24,6 @@ Requirements
 python >= 2.7  
 sqllite
 requests
-pytest
 
 Run
 ---
@@ -42,7 +41,7 @@ Tested only with sqlite.
 Verify
 -----
 
-The ayasdi_assignment.csv file takes around 2 mins to generate. I have used generators and inserted rows in table chunk-wise to improve performance.  
+The ayasdi_assignment.csv file takes around 65 sec secs to generate. Improved the performance significantly.
 Also, I have used logger in the python module to indicate any INFO,ERROR messages in module.
 
 Use ```wc -l ayasdi_assignment.csv``` to ensure all the lines were successfully written in the file.

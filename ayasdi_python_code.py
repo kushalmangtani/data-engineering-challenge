@@ -10,9 +10,9 @@ import traceback
 import requests
 
 # Constants
-FILE_NAME = "ayasdi_assignment.csv"
-DB_NAME = "ayasdi_assignment.db"
-TABLE_NAME = "ayasdi_assignment_table_asdsa"
+FILE_NAME = "data.csv"
+DB_NAME = "dataset.db"
+TABLE_NAME = "gaussian_dist_table"
 DEFAULT_CHUNK_SIZE = 10000
 TOTAL_ENTRIES = 1000000
 WORDS_LIST_URL = "https://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain"

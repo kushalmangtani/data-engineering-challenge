@@ -1,7 +1,7 @@
 Objective
 ---------
 
-The objective behind doing this coding challenge and opensourcing it:  
+The objective behind doing this coding challenge (problem defination below) and opensourcing it:  
 1.  To demonstrate my problem solving skills.  
 2.  To demonstrate my python coding skills.  
 3.  To demonstrate my data engineering skills. This program initially took 15+ mins to generate. I was quickly able to optimize it using generators.  
@@ -9,7 +9,7 @@ The objective behind doing this coding challenge and opensourcing it:
 Currently, this program takes approx 2 mins to generate the dataset file and insert it in the database. 7x performance improvement.  
 
 problem-defination
-==================
+------------------
 
 Produce a python module  which does the following:  
 

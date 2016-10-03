@@ -32,7 +32,7 @@ Requirements
 ------------
 
 python >= 2.7  
-sqllite  
+sqlite  
 requests
 
 Run
@@ -44,7 +44,7 @@ Run
 Output
 -------
 
-It should generate a "data.csv" in current dir, create a "gaussian_dist_table" in "dataset.db" in sqllite. The table will have all the entries of the csv file.  
+It should generate a "data.csv" in current dir, create a "gaussian_dist_table" in "dataset.db" in sqlite. The table will have all the entries of the csv file.  
 Tested only with sqlite.
 
 Verify
